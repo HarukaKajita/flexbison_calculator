@@ -1,0 +1,592 @@
+状態 14 conflicts: 4 shift/reduce
+
+
+文法
+
+    0 $accept: statement_list $end
+
+    1 statement_list: statement_list statement_list
+    2               | statement ';'
+    3               | statement '\n'
+
+    4 statement: NAME '=' expression
+    5          | expression
+
+    6 expression_list: expression
+    7                | expression_list ',' expression
+
+    8 expression: expression '+' expression
+    9           | expression '-' expression
+   10           | expression '*' expression
+   11           | expression '/' expression
+   12           | '-' expression
+   13           | '(' expression ')'
+   14           | NUMBER
+   15           | NAME
+   16           | NAME '(' expression_list ')'
+
+
+出現位置の規則による終端
+
+$end (0) 0
+'\n' (10) 3
+'(' (40) 13 16
+')' (41) 13 16
+'*' (42) 10
+'+' (43) 8
+',' (44) 7
+'-' (45) 9 12
+'/' (47) 11
+';' (59) 2
+'=' (61) 4
+error (256)
+NAME (258) 4 15 16
+NUMBER (259) 14
+UMINUS (260)
+
+
+出現位置の規則による非終端
+
+$accept (16)
+    左辺: 0
+statement_list (17)
+    左辺: 1 2 3, 右辺: 0 1
+statement (18)
+    左辺: 4 5, 右辺: 2 3
+expression_list (19)
+    左辺: 6 7, 右辺: 7 16
+expression (20)
+    左辺: 8 9 10 11 12 13 14 15 16, 右辺: 4 5 6 7 8 9 10 11 12
+    13
+
+
+State 0
+
+    0 $accept: . statement_list $end
+    1 statement_list: . statement_list statement_list
+    2               | . statement ';'
+    3               | . statement '\n'
+    4 statement: . NAME '=' expression
+    5          | . expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 1
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    statement_list  go to state 5
+    statement       go to state 6
+    expression      go to state 7
+
+
+State 1
+
+    4 statement: NAME . '=' expression
+   15 expression: NAME .  ['+', '-', '*', '/', ';', '\n']
+   16           | NAME . '(' expression_list ')'
+
+    '='  shift, and go to state 8
+    '('  shift, and go to state 9
+
+    $default  reduce using rule 15 (expression)
+
+
+State 2
+
+   14 expression: NUMBER .
+
+    $default  reduce using rule 14 (expression)
+
+
+State 3
+
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   12           | '-' . expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 11
+
+
+State 4
+
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   13           | '(' . expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 12
+
+
+State 5
+
+    0 $accept: statement_list . $end
+    1 statement_list: . statement_list statement_list
+    1               | statement_list . statement_list
+    2               | . statement ';'
+    3               | . statement '\n'
+    4 statement: . NAME '=' expression
+    5          | . expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    $end    shift, and go to state 13
+    NAME    shift, and go to state 1
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    statement_list  go to state 14
+    statement       go to state 6
+    expression      go to state 7
+
+
+State 6
+
+    2 statement_list: statement . ';'
+    3               | statement . '\n'
+
+    ';'   shift, and go to state 15
+    '\n'  shift, and go to state 16
+
+
+State 7
+
+    5 statement: expression .  [';', '\n']
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 17
+    '-'  shift, and go to state 18
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 5 (statement)
+
+
+State 8
+
+    4 statement: NAME '=' . expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 21
+
+
+State 9
+
+    6 expression_list: . expression
+    7                | . expression_list ',' expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+   16           | NAME '(' . expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression_list  go to state 22
+    expression       go to state 23
+
+
+State 10
+
+   15 expression: NAME .  ['+', '-', '*', '/', ';', '\n', ',', ')']
+   16           | NAME . '(' expression_list ')'
+
+    '('  shift, and go to state 9
+
+    $default  reduce using rule 15 (expression)
+
+
+State 11
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+   12           | '-' expression .  ['+', '-', '*', '/', ';', '\n', ',', ')']
+
+    $default  reduce using rule 12 (expression)
+
+    Conflict between rule 12 and token '+' resolved as reduce ('+' < UMINUS).
+    Conflict between rule 12 and token '-' resolved as reduce ('-' < UMINUS).
+    Conflict between rule 12 and token '*' resolved as reduce ('*' < UMINUS).
+    Conflict between rule 12 and token '/' resolved as reduce ('/' < UMINUS).
+
+
+State 12
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+   13           | '(' expression . ')'
+
+    '+'  shift, and go to state 17
+    '-'  shift, and go to state 18
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+    ')'  shift, and go to state 24
+
+
+State 13
+
+    0 $accept: statement_list $end .
+
+    $default  accept
+
+
+State 14
+
+    1 statement_list: . statement_list statement_list
+    1               | statement_list . statement_list
+    1               | statement_list statement_list .  [$end, NAME, NUMBER, '-', '(']
+    2               | . statement ';'
+    3               | . statement '\n'
+    4 statement: . NAME '=' expression
+    5          | . expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 1
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    NAME      [reduce using rule 1 (statement_list)]
+    NUMBER    [reduce using rule 1 (statement_list)]
+    '-'       [reduce using rule 1 (statement_list)]
+    '('       [reduce using rule 1 (statement_list)]
+    $default  reduce using rule 1 (statement_list)
+
+    statement_list  go to state 14
+    statement       go to state 6
+    expression      go to state 7
+
+
+State 15
+
+    2 statement_list: statement ';' .
+
+    $default  reduce using rule 2 (statement_list)
+
+
+State 16
+
+    3 statement_list: statement '\n' .
+
+    $default  reduce using rule 3 (statement_list)
+
+
+State 17
+
+    8 expression: . expression '+' expression
+    8           | expression '+' . expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 25
+
+
+State 18
+
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+    9           | expression '-' . expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 26
+
+
+State 19
+
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   10           | expression '*' . expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 27
+
+
+State 20
+
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   11           | expression '/' . expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 28
+
+
+State 21
+
+    4 statement: NAME '=' expression .  [';', '\n']
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 17
+    '-'  shift, and go to state 18
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 4 (statement)
+
+
+State 22
+
+    7 expression_list: expression_list . ',' expression
+   16 expression: NAME '(' expression_list . ')'
+
+    ','  shift, and go to state 29
+    ')'  shift, and go to state 30
+
+
+State 23
+
+    6 expression_list: expression .  [',', ')']
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 17
+    '-'  shift, and go to state 18
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 6 (expression_list)
+
+
+State 24
+
+   13 expression: '(' expression ')' .
+
+    $default  reduce using rule 13 (expression)
+
+
+State 25
+
+    8 expression: expression . '+' expression
+    8           | expression '+' expression .  ['+', '-', ';', '\n', ',', ')']
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 8 (expression)
+
+    Conflict between rule 8 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 8 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 8 and token '*' resolved as shift ('+' < '*').
+    Conflict between rule 8 and token '/' resolved as shift ('+' < '/').
+
+
+State 26
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+    9           | expression '-' expression .  ['+', '-', ';', '\n', ',', ')']
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 9 (expression)
+
+    Conflict between rule 9 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 9 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 9 and token '*' resolved as shift ('-' < '*').
+    Conflict between rule 9 and token '/' resolved as shift ('-' < '/').
+
+
+State 27
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   10           | expression '*' expression .  ['+', '-', '*', '/', ';', '\n', ',', ')']
+   11           | expression . '/' expression
+
+    $default  reduce using rule 10 (expression)
+
+    Conflict between rule 10 and token '+' resolved as reduce ('+' < '*').
+    Conflict between rule 10 and token '-' resolved as reduce ('-' < '*').
+    Conflict between rule 10 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 10 and token '/' resolved as reduce (%left '/').
+
+
+State 28
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+   11           | expression '/' expression .  ['+', '-', '*', '/', ';', '\n', ',', ')']
+
+    $default  reduce using rule 11 (expression)
+
+    Conflict between rule 11 and token '+' resolved as reduce ('+' < '/').
+    Conflict between rule 11 and token '-' resolved as reduce ('-' < '/').
+    Conflict between rule 11 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 11 and token '/' resolved as reduce (%left '/').
+
+
+State 29
+
+    7 expression_list: expression_list ',' . expression
+    8 expression: . expression '+' expression
+    9           | . expression '-' expression
+   10           | . expression '*' expression
+   11           | . expression '/' expression
+   12           | . '-' expression
+   13           | . '(' expression ')'
+   14           | . NUMBER
+   15           | . NAME
+   16           | . NAME '(' expression_list ')'
+
+    NAME    shift, and go to state 10
+    NUMBER  shift, and go to state 2
+    '-'     shift, and go to state 3
+    '('     shift, and go to state 4
+
+    expression  go to state 31
+
+
+State 30
+
+   16 expression: NAME '(' expression_list ')' .
+
+    $default  reduce using rule 16 (expression)
+
+
+State 31
+
+    7 expression_list: expression_list ',' expression .  [',', ')']
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 17
+    '-'  shift, and go to state 18
+    '*'  shift, and go to state 19
+    '/'  shift, and go to state 20
+
+    $default  reduce using rule 7 (expression_list)
