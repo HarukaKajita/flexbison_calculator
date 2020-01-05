@@ -53,20 +53,24 @@ statement_list:
 ;
 
 statement:
-  NAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NUMERICNAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| BOOLEANNAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| expression ';'            {printf("statement : expression;の並び\n"); printf("= %g\n", $1);}
-| logical_expression ';'            {if($1 == 1) printf("statement : true\n");
-                                      else printf("statement : false\n");}
-| ifstatement {printf("statement : ifstatement");}
-| endifstatement {printf("statement : endifstatement");}
+  NAME '=' expression ';'                 {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NUMERICNAME '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NAME '=' logical_expression ';'         {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| BOOLEANNAME '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| expression ';'                          {printf("statement : expression;の並び\n"); if(statement_state==1){printf("= %g\n", $1);}}
+| logical_expression ';'                  {
+                                            if(statement_state==1){
+                                              if($1 == 1) printf("statement : true\n");
+                                              else printf("statement : false\n");
+                                            }
+                                          }
+| ifstatement                              {printf("statement : ifstatement");}
+| endifstatement                           {printf("statement : endifstatement");}
 ;
 
 expression_list:
-  expression                     {printf("expression to expression_list\n"); argList[argNum++] = $1;}
-| expression_list ',' expression {printf("expression_list , expression\n"); argList[argNum++] = $3;} 
+  expression                     {printf("expression to expression_list\n"); if(statement_state==1){argList[argNum++] = $1;}}
+| expression_list ',' expression {printf("expression_list , expression\n"); if(statement_state==1){argList[argNum++] = $3;}}
 ;
 
 endifstatement:
@@ -76,37 +80,39 @@ endifstatement:
 ifstatement:
   IF '(' logical_expression ')' {
                                   printf("logical_statement evaluate : %d\n", $3);
-                                    {
+                                  if(statement_state==1){
                                     if($3 == 1) statement_state = 1; else statement_state = 0;
                                   }
                                 }
 ;
 
 logical_expression:
-  BOOL                          {printf("BOOL to logical_expression\n");$$ = $1;}
-| BOOLEANNAME                   {printf("BOOLNAME to logical_expression\n");$$ = $1->value;}
-| expression LESS expression     { $$ = $1 < $3;}
-| expression GREAT expression     { $$ = $1 > $3;}
-| expression LEEQ expression    { $$ = $1 <= $3;}
-| expression GREQ expression    { $$ = $1 >= $3;}
-| expression EQ expression    { $$ = $1 == $3;}
-| expression NOTEQ expression    { $$ = $1 != $3;}
+  BOOL                          {printf("BOOL to logical_expression\n"); if(statement_state==1){$$ = $1;}}
+| BOOLEANNAME                   {printf("BOOLNAME to logical_expression\n"); if(statement_state==1){$$ = $1->value;}}
+| expression LESS expression     { if(statement_state==1){$$ = $1 < $3;}}
+| expression GREAT expression    { if(statement_state==1){$$ = $1 > $3;}}
+| expression LEEQ expression     { if(statement_state==1){$$ = $1 <= $3;}}
+| expression GREQ expression     { if(statement_state==1){$$ = $1 >= $3;}}
+| expression EQ expression       { if(statement_state==1){$$ = $1 == $3;}}
+| expression NOTEQ expression    { if(statement_state==1){$$ = $1 != $3;}}
 ;
 
 expression: 
-  expression '+' expression   { printf("expression + expression\n"); $$ = $1 + $3;}
-| expression '-' expression   { printf("expression - expression\n"); $$ = $1 - $3;}
-| expression '*' expression   { printf("expression * expression\n"); $$ = $1 * $3;}
-| expression '/' expression   { printf("expression / expression\n"); if($3 == 0.0) yyerror("Devide by zero"); else $$ = $1 / $3;}
-| '-' expression %prec UMINUS { printf("-expression %prec UMINUS\n"); $$ = -$2;}
-| '(' expression ')'          { printf("(expression)\n"); $$ = $2;}
-| NUMBER                      { printf("NUMBER to expression\n"); $$ = $1;}
-| NUMERICNAME                        { printf("NUMERICNAME to expression\n");  $$ = $1->value;}
+  expression '+' expression   { printf("expression + expression\n"); if(statement_state==1){$$ = $1 + $3;}}
+| expression '-' expression   { printf("expression - expression\n"); if(statement_state==1){$$ = $1 - $3;}}
+| expression '*' expression   { printf("expression * expression\n"); if(statement_state==1){$$ = $1 * $3;}}
+| expression '/' expression   { printf("expression / expression\n"); if(statement_state==1){if($3 == 0.0) yyerror("Devide by zero"); else $$ = $1 / $3;}}
+| '-' expression %prec UMINUS { printf("-expression %prec UMINUS\n"); if(statement_state==1){$$ = -$2;}}
+| '(' expression ')'          { printf("(expression)\n"); if(statement_state==1){$$ = $2;}}
+| NUMBER                      { printf("NUMBER to expression\n"); if(statement_state==1){$$ = $1;}}
+| NUMERICNAME                        { printf("NUMERICNAME to expression\n");  if(statement_state==1){$$ = $1->value;}}
 | FUNCNAME '(' expression_list ')'{  
                                     if($1 -> funcptr){
                                       //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
-                                      $$ = ($1->funcptr)(argList[0], argList[1], argList[2]);
-                                      argNum = 0;
+                                      if(statement_state==1){
+                                        $$ = ($1->funcptr)(argList[0], argList[1], argList[2]);
+                                        argNum = 0;
+                                      }
                                     }else{
                                       printf("%s not a function.\n", $1->name);
                                     }

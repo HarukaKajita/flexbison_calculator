@@ -53,7 +53,13 @@ extern int yydebug;
     BOOL = 263,
     IF = 264,
     ENDIF = 265,
-    UMINUS = 266
+    LESS = 266,
+    GREAT = 267,
+    LEEQ = 268,
+    GREQ = 269,
+    EQ = 270,
+    NOTEQ = 271,
+    UMINUS = 272
   };
 #endif
 /* Tokens.  */
@@ -65,7 +71,13 @@ extern int yydebug;
 #define BOOL 263
 #define IF 264
 #define ENDIF 265
-#define UMINUS 266
+#define LESS 266
+#define GREAT 267
+#define LEEQ 268
+#define GREQ 269
+#define EQ 270
+#define NOTEQ 271
+#define UMINUS 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -78,7 +90,7 @@ union YYSTYPE
   struct symbol* symbolPtr;
   int bval;
 
-#line 82 "y.tab.h" /* yacc.c:1909  */
+#line 94 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
