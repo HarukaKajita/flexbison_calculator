@@ -46,26 +46,37 @@ extern int yydebug;
   enum yytokentype
   {
     NAME = 258,
-    NUMBER = 259,
-    UMINUS = 260
+    BOOLEANNAME = 259,
+    NUMERICNAME = 260,
+    FUNCNAME = 261,
+    NUMBER = 262,
+    BOOL = 263,
+    IF = 264,
+    UMINUS = 265
   };
 #endif
 /* Tokens.  */
 #define NAME 258
-#define NUMBER 259
-#define UMINUS 260
+#define BOOLEANNAME 259
+#define NUMERICNAME 260
+#define FUNCNAME 261
+#define NUMBER 262
+#define BOOL 263
+#define IF 264
+#define UMINUS 265
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 25 "report.y" /* yacc.c:1909  */
+#line 28 "report.y" /* yacc.c:1909  */
 
   double dval;
-  struct symbolTable* symbolPtr;
+  struct symbol* symbolPtr;
+  int bval;
 
-#line 69 "y.tab.h" /* yacc.c:1909  */
+#line 80 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

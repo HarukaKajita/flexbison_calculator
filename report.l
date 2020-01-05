@@ -2,11 +2,30 @@
 	#include "y.tab.h"
 	#include "report.h"
 	#include <math.h>
+	#include <stdio.h>
+	
 %}
 
 %%
 
+if {
+	printf("if token\n");
+	return IF;
+}
+
+true {
+	printf("true  token\n");
+	yylval.bval = 1;
+	return BOOL;
+}
+false {
+	printf("falsae token\n");
+	yylval.bval = 0;
+	return BOOL;
+}
+
 ([0-9]+|([0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?)	{
+	printf("num token %g\n", atof(yytext));
 	yylval.dval = atof(yytext);
 	return NUMBER;
 }
@@ -14,9 +33,15 @@
 [ \t] ;
 
 [a-zA-Z][a-zA-Z0-9]*	{
-	struct symbolTable* symbolPtr = lookSymbol(yytext);
+	printf("symbol token : %s\n", yytext);
+	struct symbol* symbolPtr = lookSymbol(yytext);
 	yylval.symbolPtr = symbolPtr;
-	return NAME;
+	switch(symbolPtr->type){
+		case numeric: return NUMERICNAME; 
+		case boolean: return BOOLEANNAME; 
+		case function: return FUNCNAME;
+		default: return NAME;
+	}
 }
 
 "$" {return 0;}
