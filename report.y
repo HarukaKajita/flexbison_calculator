@@ -53,24 +53,24 @@ statement_list:
 
 statement:
   NAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NAME '=' expression '\n'  {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
+| NAME '=' expression       {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
 | NUMERICNAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NUMERICNAME '=' expression '\n'  {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
+| NUMERICNAME '=' expression       {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
 | NAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| NAME '=' logical_expression '\n'  {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
+| NAME '=' logical_expression       {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
 | BOOLEANNAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| BOOLEANNAME '=' logical_expression '\n'  {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
+| BOOLEANNAME '=' logical_expression       {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
 | expression ';'            {printf("statement : expression;の並び\n"); printf("= %g\n", $1);}
-| expression '\n'           {printf("statement : expression\\nの並び\n"); printf("= %g\n", $1);}
+| expression                {printf("statement : expression\\nの並び\n"); printf("= %g\n", $1);}
 | logical_expression ';'            {if($1 == 1) printf("statement : true\n");
                                       else printf("statement : false\n");}
-| logical_expression '\n'           {if($1 == 1) printf("statement : true\n");
+| logical_expression                {if($1 == 1) printf("statement : true\n");
                                       else printf("statement : false\n");}
 | ifstatement {printf("statement : ifstatement");}
 ;
 
 expression_list:
-  expression                     {printf("expression to expression_list\n"); argList[argNum++] = $1;}
+  expression ',' expression      {printf("expression to expression_list\n"); argList[argNum++] = $1;}
 | expression_list ',' expression {printf("expression_list , expression\n"); argList[argNum++] = $3;} 
 ;
 
@@ -101,16 +101,24 @@ expression:
 | '(' expression ')'          { printf("(expression)\n"); $$ = $2;}
 | NUMBER                      { printf("NUMBER to expression\n"); $$ = $1;}
 | NUMERICNAME                        { printf("NUMERICNAME to expression\n");  $$ = $1->value;}
-| FUNCNAME '(' expression_list ')'{  {
-                                  if($1 -> funcptr){
-                                    //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
-                                    $$ = ($1->funcptr)(argList[0], argList[1], argList[2]);
-                                    argNum = 0;
-                                  }else{
-                                    printf("%s not a function.\n", $1->name);
+| FUNCNAME '(' expression')'      {  
+                                    if($1 -> funcptr){
+                                      //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
+                                      $$ = ($1->funcptr)(argList[0]);
+                                      argNum = 0;
+                                    }else{
+                                      printf("%s not a function.\n", $1->name);
+                                    }
                                   }
-                                }
-                              }
+| FUNCNAME '(' expression_list ')'{  
+                                    if($1 -> funcptr){
+                                      //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
+                                      $$ = ($1->funcptr)(argList[0], argList[1], argList[2]);
+                                      argNum = 0;
+                                    }else{
+                                      printf("%s not a function.\n", $1->name);
+                                    }
+                                  }
 ;
 
 %%
