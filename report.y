@@ -37,7 +37,8 @@ int statement_state = 1;
 %token <symbolPtr> FUNCNAME
 %token <dval> NUMBER
 %token <bval> BOOL
-%token IF
+%token IF ENDIF
+%left LESS GREAT LEEQ GREQ EQ NOTEQ
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -46,50 +47,50 @@ int statement_state = 1;
 %%
 
 statement_list:
-  statement                {printf("statement_list : statement\n"); statement_state = 1;}
-| statement_list statement {printf("statement_list : statement_list statement\n"); statement_state = 1;}
+  statement                {printf("statement_list : statement\n");}
+| statement_list statement {printf("statement_list : statement_list statement\n");}
 | statement_list '\n'      {printf("statement_list : statement_list \\n \n"); statement_state = 1;}
 ;
 
 statement:
   NAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NAME '=' expression       {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
 | NUMERICNAME '=' expression ';'   {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
-| NUMERICNAME '=' expression       {printf("statement : 数値代入\n"); $1->value = $3; $1->type = numeric;}
 | NAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| NAME '=' logical_expression       {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
 | BOOLEANNAME '=' logical_expression ';'   {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
-| BOOLEANNAME '=' logical_expression       {printf("statement : 真偽値代入\n");  $1->value = $3; $1->type = boolean;}
 | expression ';'            {printf("statement : expression;の並び\n"); printf("= %g\n", $1);}
-| expression                {printf("statement : expression\\nの並び\n"); printf("= %g\n", $1);}
 | logical_expression ';'            {if($1 == 1) printf("statement : true\n");
                                       else printf("statement : false\n");}
-| logical_expression                {if($1 == 1) printf("statement : true\n");
-                                      else printf("statement : false\n");}
 | ifstatement {printf("statement : ifstatement");}
+| endifstatement {printf("statement : endifstatement");}
 ;
 
 expression_list:
-  expression ',' expression      {printf("expression to expression_list\n"); argList[argNum++] = $1;}
+  expression                     {printf("expression to expression_list\n"); argList[argNum++] = $1;}
 | expression_list ',' expression {printf("expression_list , expression\n"); argList[argNum++] = $3;} 
 ;
 
+endifstatement:
+  ENDIF { statement_state = 1;}
+;
+
 ifstatement:
-  IF '(' logical_expression ')' statement{
-                                    printf("logical_statement evaluate : %d\n", $3);
-                                     {
-                                      if($3 == 1) statement_state = 1; else statement_state = 0;
-                                    }
+  IF '(' logical_expression ')' {
+                                  printf("logical_statement evaluate : %d\n", $3);
+                                    {
+                                    if($3 == 1) statement_state = 1; else statement_state = 0;
                                   }
+                                }
 ;
 
 logical_expression:
   BOOL                          {printf("BOOL to logical_expression\n");$$ = $1;}
 | BOOLEANNAME                   {printf("BOOLNAME to logical_expression\n");$$ = $1->value;}
-| expression '<' expression     { $$ = $1 < $3;}
-| expression '>' expression     { $$ = $1 > $3;}
-| expression "<=" expression    { $$ = $1 <= $3;}
-| expression ">=" expression    { $$ = $1 >= $3;}
+| expression LESS expression     { $$ = $1 < $3;}
+| expression GREAT expression     { $$ = $1 > $3;}
+| expression LEEQ expression    { $$ = $1 <= $3;}
+| expression GREQ expression    { $$ = $1 >= $3;}
+| expression EQ expression    { $$ = $1 == $3;}
+| expression NOTEQ expression    { $$ = $1 != $3;}
 ;
 
 expression: 
@@ -101,15 +102,6 @@ expression:
 | '(' expression ')'          { printf("(expression)\n"); $$ = $2;}
 | NUMBER                      { printf("NUMBER to expression\n"); $$ = $1;}
 | NUMERICNAME                        { printf("NUMERICNAME to expression\n");  $$ = $1->value;}
-| FUNCNAME '(' expression')'      {  
-                                    if($1 -> funcptr){
-                                      //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
-                                      $$ = ($1->funcptr)(argList[0]);
-                                      argNum = 0;
-                                    }else{
-                                      printf("%s not a function.\n", $1->name);
-                                    }
-                                  }
 | FUNCNAME '(' expression_list ')'{  
                                     if($1 -> funcptr){
                                       //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。

@@ -52,7 +52,8 @@ extern int yydebug;
     NUMBER = 262,
     BOOL = 263,
     IF = 264,
-    UMINUS = 265
+    ENDIF = 265,
+    UMINUS = 266
   };
 #endif
 /* Tokens.  */
@@ -63,7 +64,8 @@ extern int yydebug;
 #define NUMBER 262
 #define BOOL 263
 #define IF 264
-#define UMINUS 265
+#define ENDIF 265
+#define UMINUS 266
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -76,7 +78,7 @@ union YYSTYPE
   struct symbol* symbolPtr;
   int bval;
 
-#line 80 "y.tab.h" /* yacc.c:1909  */
+#line 82 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

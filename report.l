@@ -12,7 +12,10 @@ if {
 	printf("if token\n");
 	return IF;
 }
-
+endif {
+	printf("endif token\n");
+	return ENDIF;
+}
 true {
 	printf("true  token\n");
 	yylval.bval = 1;
@@ -23,6 +26,14 @@ false {
 	yylval.bval = 0;
 	return BOOL;
 }
+
+"<=" {return LEEQ;}
+">=" {return GREQ;}
+"==" {return EQ;}
+"!=" {return NOTEQ;}
+"<" {return LESS;}
+">" {return GREAT;}
+
 
 ([0-9]+|([0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?)	{
 	printf("num token %g\n", atof(yytext));
