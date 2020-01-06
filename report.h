@@ -6,6 +6,7 @@ typedef enum symbolType{
         undefined,
         numeric,
         boolean,
+        characters,
         function
 } t_symbolType;
 
@@ -15,6 +16,7 @@ struct symbol{
         //-------------------
         double (*funcptr)();
         double value;
+        char* charPtr;
 } symbolTable[SYMBOLNUM];
 
 struct symbol* lookSymbol(char* name);

@@ -29,14 +29,17 @@ int statement_state = 1;
   double dval;
   struct symbol* symbolPtr;
   int bval;
+  char* charPtr;
 }
 
 %token <symbolPtr> NAME
 %token <symbolPtr> BOOLEANNAME
 %token <symbolPtr> NUMERICNAME
+%token <symbolPtr> CHARACTERSNAME
 %token <symbolPtr> FUNCNAME
 %token <dval> NUMBER
 %token <bval> BOOL
+%token <charPtr> CHARACTERS
 %token IF ENDIF
 %left LESS GREAT LEEQ GREQ EQ NOTEQ
 %left '+' '-'
@@ -53,17 +56,20 @@ statement_list:
 ;
 
 statement:
-  NAME '=' expression ';'                 {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
-| NUMERICNAME '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
-| NAME '=' logical_expression ';'         {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
-| BOOLEANNAME '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
-| expression ';'                          {printf("statement : expression;の並び\n"); if(statement_state==1){printf("= %g\n", $1);}}
-| logical_expression ';'                  {
-                                            if(statement_state==1){
-                                              if($1 == 1) printf("statement : true\n");
-                                              else printf("statement : false\n");
-                                            }
-                                          }
+  NAME           '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NUMERICNAME    '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NAME           '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| BOOLEANNAME    '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| NAME           '=' CHARACTERS ';'          {printf("statement : 文字列代入\n"); if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
+| CHARACTERSNAME '=' CHARACTERS ';'          {printf("statement : 文字列代入\n"); if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
+| CHARACTERSNAME ';'                         {printf("statement : CHARACTERSNAME;の並び\n"); if(statement_state==1){printf("= %s\n", $1->charPtr);}}
+| expression ';'                             {printf("statement : expression;の並び\n"); if(statement_state==1){printf("= %g\n", $1);}}
+| logical_expression ';'                     {
+                                                if(statement_state==1){
+                                                  if($1 == 1) printf("statement : true\n");
+                                                  else printf("statement : false\n");
+                                                }
+                                             }
 | ifstatement                              {printf("statement : ifstatement");}
 | endifstatement                           {printf("statement : endifstatement");}
 ;

@@ -3,7 +3,7 @@
 	#include "report.h"
 	#include <math.h>
 	#include <stdio.h>
-	
+	#include <string.h>
 %}
 
 %%
@@ -34,6 +34,14 @@ false {
 "<" {return LESS;}
 ">" {return GREAT;}
 
+\"[^\"]*\" {
+	size_t size = strlen(yytext)-2;//""の分小さく
+	const char* charsHead = &yytext[1];
+	char* characters = (char*)strndup(charsHead, size);
+	yylval.charPtr = characters;
+	printf("characters toke : %s\n", characters);
+	return CHARACTERS;
+}
 
 ([0-9]+|([0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?)	{
 	printf("num token %g\n", atof(yytext));
@@ -48,9 +56,10 @@ false {
 	struct symbol* symbolPtr = lookSymbol(yytext);
 	yylval.symbolPtr = symbolPtr;
 	switch(symbolPtr->type){
-		case numeric: return NUMERICNAME; 
-		case boolean: return BOOLEANNAME; 
-		case function: return FUNCNAME;
+		case numeric:    return NUMERICNAME; 
+		case boolean:    return BOOLEANNAME; 
+		case characters: return CHARACTERSNAME; 
+		case function:   return FUNCNAME;
 		default: return NAME;
 	}
 }

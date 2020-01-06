@@ -48,36 +48,40 @@ extern int yydebug;
     NAME = 258,
     BOOLEANNAME = 259,
     NUMERICNAME = 260,
-    FUNCNAME = 261,
-    NUMBER = 262,
-    BOOL = 263,
-    IF = 264,
-    ENDIF = 265,
-    LESS = 266,
-    GREAT = 267,
-    LEEQ = 268,
-    GREQ = 269,
-    EQ = 270,
-    NOTEQ = 271,
-    UMINUS = 272
+    CHARACTERSNAME = 261,
+    FUNCNAME = 262,
+    NUMBER = 263,
+    BOOL = 264,
+    CHARACTERS = 265,
+    IF = 266,
+    ENDIF = 267,
+    LESS = 268,
+    GREAT = 269,
+    LEEQ = 270,
+    GREQ = 271,
+    EQ = 272,
+    NOTEQ = 273,
+    UMINUS = 274
   };
 #endif
 /* Tokens.  */
 #define NAME 258
 #define BOOLEANNAME 259
 #define NUMERICNAME 260
-#define FUNCNAME 261
-#define NUMBER 262
-#define BOOL 263
-#define IF 264
-#define ENDIF 265
-#define LESS 266
-#define GREAT 267
-#define LEEQ 268
-#define GREQ 269
-#define EQ 270
-#define NOTEQ 271
-#define UMINUS 272
+#define CHARACTERSNAME 261
+#define FUNCNAME 262
+#define NUMBER 263
+#define BOOL 264
+#define CHARACTERS 265
+#define IF 266
+#define ENDIF 267
+#define LESS 268
+#define GREAT 269
+#define LEEQ 270
+#define GREQ 271
+#define EQ 272
+#define NOTEQ 273
+#define UMINUS 274
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -89,8 +93,9 @@ union YYSTYPE
   double dval;
   struct symbol* symbolPtr;
   int bval;
+  char* charPtr;
 
-#line 94 "y.tab.h" /* yacc.c:1909  */
+#line 99 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
