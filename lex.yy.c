@@ -755,98 +755,91 @@ case 1:
 YY_RULE_SETUP
 #line 11 "report.l"
 {
-	printf("if token\n");
 	return IF;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "report.l"
+#line 14 "report.l"
 {
-	printf("endif token\n");
 	return ENDIF;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 19 "report.l"
+#line 17 "report.l"
 {
-	printf("true  token\n");
 	yylval.bval = 1;
 	return BOOL;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 24 "report.l"
+#line 21 "report.l"
 {
-	printf("falsae token\n");
 	yylval.bval = 0;
 	return BOOL;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 30 "report.l"
+#line 26 "report.l"
 {return LEEQ;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 31 "report.l"
+#line 27 "report.l"
 {return GREQ;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 32 "report.l"
+#line 28 "report.l"
 {return EQ;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 33 "report.l"
+#line 29 "report.l"
 {return NOTEQ;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 34 "report.l"
+#line 30 "report.l"
 {return LESS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 35 "report.l"
+#line 31 "report.l"
 {return GREAT;}
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 37 "report.l"
+#line 33 "report.l"
 {
 	size_t size = strlen(yytext)-2;//""の分小さく
 	const char* charsHead = &yytext[1];
 	char* characters = (char*)strndup(charsHead, size);
 	yylval.charPtr = characters;
-	printf("characters toke : %s\n", characters);
 	return CHARACTERS;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 46 "report.l"
+#line 41 "report.l"
 {
-	printf("num token %g\n", atof(yytext));
 	yylval.dval = atof(yytext);
 	return NUMBER;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 52 "report.l"
+#line 46 "report.l"
 ;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 54 "report.l"
+#line 48 "report.l"
 {
-	printf("symbol token : %s\n", yytext);
 	struct symbol* symbolPtr = lookSymbol(yytext);
 	yylval.symbolPtr = symbolPtr;
 	switch(symbolPtr->type){
@@ -860,24 +853,24 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 67 "report.l"
+#line 60 "report.l"
 {return 0;}
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
-#line 70 "report.l"
+#line 63 "report.l"
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 70 "report.l"
+#line 63 "report.l"
 return yytext[0];
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 72 "report.l"
+#line 65 "report.l"
 ECHO;
 	YY_BREAK
-#line 880 "lex.yy.c"
+#line 873 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1882,7 +1875,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 72 "report.l"
+#line 65 "report.l"
 
 
 void yyerror(char* errmsg){

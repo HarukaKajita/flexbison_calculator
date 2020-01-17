@@ -9,20 +9,16 @@
 %%
 
 if {
-	printf("if token\n");
 	return IF;
 }
 endif {
-	printf("endif token\n");
 	return ENDIF;
 }
 true {
-	printf("true  token\n");
 	yylval.bval = 1;
 	return BOOL;
 }
 false {
-	printf("falsae token\n");
 	yylval.bval = 0;
 	return BOOL;
 }
@@ -39,12 +35,10 @@ false {
 	const char* charsHead = &yytext[1];
 	char* characters = (char*)strndup(charsHead, size);
 	yylval.charPtr = characters;
-	printf("characters toke : %s\n", characters);
 	return CHARACTERS;
 }
 
 ([0-9]+|([0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?)	{
-	printf("num token %g\n", atof(yytext));
 	yylval.dval = atof(yytext);
 	return NUMBER;
 }
@@ -52,7 +46,6 @@ false {
 [ \t] ;
 
 [a-zA-Z][a-zA-Z0-9]*	{
-	printf("symbol token : %s\n", yytext);
 	struct symbol* symbolPtr = lookSymbol(yytext);
 	yylval.symbolPtr = symbolPtr;
 	switch(symbolPtr->type){

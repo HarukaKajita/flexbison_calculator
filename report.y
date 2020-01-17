@@ -13,15 +13,6 @@ double argList[MAXARGNUM];
 //現在詰められている引数の数
 short argNum = 0;
 
-/*note
-ch3-05系を大きく変えずに実装するなら引数の数には上限を設けざるを得ないという結論に至った。
-
-expression, expression , ...の並びをexpression_list記号として扱い、アクションでargListに各expressionを保存する。
-$$ = ($1->func)(arg[0], arg[1], arg[2])のように常にMAXARGNUM個の引数を渡して実行するようにする事で対応する。
-この仕組みだといhoge(a, fuga(b));のような入れ子構造のコールに対応出来ない
-状態とスタックを組み込んだ設計にすれば入れ子に対応出来る
-*/
-
 int statement_state = 1;
 %}
 
@@ -50,33 +41,33 @@ int statement_state = 1;
 %%
 
 statement_list:
-  statement                {printf("statement_list : statement\n");}
-| statement_list statement {printf("statement_list : statement_list statement\n");}
-| statement_list '\n'      {printf("statement_list : statement_list \\n \n"); statement_state = 1;}
+  statement                {}
+| statement_list statement {}
+| statement_list '\n'      {statement_state = 1;}
 ;
 
 statement:
-  NAME           '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
-| NUMERICNAME    '=' expression ';'          {printf("statement : 数値代入\n"); if(statement_state==1){$1->value = $3; $1->type = numeric;}}
-| NAME           '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
-| BOOLEANNAME    '=' logical_expression ';'  {printf("statement : 真偽値代入\n"); if(statement_state==1){$1->value = $3; $1->type = boolean;}}
-| NAME           '=' CHARACTERS ';'          {printf("statement : 文字列代入\n"); if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
-| CHARACTERSNAME '=' CHARACTERS ';'          {printf("statement : 文字列代入\n"); if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
-| CHARACTERSNAME ';'                         {printf("statement : CHARACTERSNAME;の並び\n"); if(statement_state==1){printf("= %s\n", $1->charPtr);}}
-| expression ';'                             {printf("statement : expression;の並び\n"); if(statement_state==1){printf("= %g\n", $1);}}
-| logical_expression ';'                     {
+  NAME           '=' expression ':'          { if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NUMERICNAME    '=' expression ':'          { if(statement_state==1){$1->value = $3; $1->type = numeric;}}
+| NAME           '=' logical_expression ':'  { if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| BOOLEANNAME    '=' logical_expression ':'  { if(statement_state==1){$1->value = $3; $1->type = boolean;}}
+| NAME           '=' CHARACTERS ':'          { if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
+| CHARACTERSNAME '=' CHARACTERS ':'          { if(statement_state==1){$1->charPtr = $3; $1->type = characters;}}
+| CHARACTERSNAME ':'                         { if(statement_state==1){printf("= %s\n", $1->charPtr);}}
+| expression ':'                             { if(statement_state==1){printf("= %g\n", $1);}}
+| logical_expression ':'                     {
                                                 if(statement_state==1){
                                                   if($1 == 1) printf("statement : true\n");
                                                   else printf("statement : false\n");
                                                 }
                                              }
-| ifstatement                              {printf("statement : ifstatement");}
-| endifstatement                           {printf("statement : endifstatement");}
+| ifstatement                              {}
+| endifstatement                           {}
 ;
 
 expression_list:
-  expression                     {printf("expression to expression_list\n"); if(statement_state==1){argList[argNum++] = $1;}}
-| expression_list ',' expression {printf("expression_list , expression\n"); if(statement_state==1){argList[argNum++] = $3;}}
+  expression                     {if(statement_state==1){argList[argNum++] = $1;}}
+| expression_list ',' expression {if(statement_state==1){argList[argNum++] = $3;}}
 ;
 
 endifstatement:
@@ -85,7 +76,6 @@ endifstatement:
 
 ifstatement:
   IF '(' logical_expression ')' {
-                                  printf("logical_statement evaluate : %d\n", $3);
                                   if(statement_state==1){
                                     if($3 == 1) statement_state = 1; else statement_state = 0;
                                   }
@@ -93,8 +83,8 @@ ifstatement:
 ;
 
 logical_expression:
-  BOOL                          {printf("BOOL to logical_expression\n"); if(statement_state==1){$$ = $1;}}
-| BOOLEANNAME                   {printf("BOOLNAME to logical_expression\n"); if(statement_state==1){$$ = $1->value;}}
+  BOOL                           { if(statement_state==1){$$ = $1;}}
+| BOOLEANNAME                    { if(statement_state==1){$$ = $1->value;}}
 | expression LESS expression     { if(statement_state==1){$$ = $1 < $3;}}
 | expression GREAT expression    { if(statement_state==1){$$ = $1 > $3;}}
 | expression LEEQ expression     { if(statement_state==1){$$ = $1 <= $3;}}
@@ -104,14 +94,14 @@ logical_expression:
 ;
 
 expression: 
-  expression '+' expression   { printf("expression + expression\n"); if(statement_state==1){$$ = $1 + $3;}}
-| expression '-' expression   { printf("expression - expression\n"); if(statement_state==1){$$ = $1 - $3;}}
-| expression '*' expression   { printf("expression * expression\n"); if(statement_state==1){$$ = $1 * $3;}}
-| expression '/' expression   { printf("expression / expression\n"); if(statement_state==1){if($3 == 0.0) yyerror("Devide by zero"); else $$ = $1 / $3;}}
-| '-' expression %prec UMINUS { printf("-expression %prec UMINUS\n"); if(statement_state==1){$$ = -$2;}}
-| '(' expression ')'          { printf("(expression)\n"); if(statement_state==1){$$ = $2;}}
-| NUMBER                      { printf("NUMBER to expression\n"); if(statement_state==1){$$ = $1;}}
-| NUMERICNAME                        { printf("NUMERICNAME to expression\n");  if(statement_state==1){$$ = $1->value;}}
+  expression '+' expression   { if(statement_state==1){$$ = $1 + $3;}}
+| expression '-' expression   { if(statement_state==1){$$ = $1 - $3;}}
+| expression '*' expression   { if(statement_state==1){$$ = $1 * $3;}}
+| expression '/' expression   { if(statement_state==1){if($3 == 0.0) yyerror("Devide by zero"); else $$ = $1 / $3;}}
+| '-' expression %prec UMINUS { if(statement_state==1){$$ = -$2;}}
+| '(' expression ')'          { if(statement_state==1){$$ = $2;}}
+| NUMBER                      { if(statement_state==1){$$ = $1;}}
+| NUMERICNAME                        { if(statement_state==1){$$ = $1->value;}}
 | FUNCNAME '(' expression_list ')'{  
                                     if($1 -> funcptr){
                                       //MAXARGNUMがいくつかに依ってここの引数の記述は変わる。
